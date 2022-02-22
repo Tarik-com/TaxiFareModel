@@ -1,4 +1,5 @@
 # imports
+import mlflow
 from asyncio import LifoQueue
 from sklearn.pipeline import make_pipeline
 from TaxiFareModel.encoders import TimeFeaturesEncoder,DistanceTransformer
@@ -7,7 +8,10 @@ from sklearn.preprocessing import StandardScaler,OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LinearRegression
 from TaxiFareModel.data import get_data,clean_data
+import memoized_property
 
+MLFLOW_URI = "https://mlflow.lewagon.co/"
+EXPERIMENT_NAME = "[BEL] [Brussels] [Tarik-com] my model  v1"
 class Trainer():
     def __init__(self, X, y):
         """
@@ -15,6 +19,8 @@ class Trainer():
             y: pandas Series
         """
         self.pipeline = None
+        self.experiment_name=EXPERIMENT_NAME
+
         self.X = X
         self.y = y
 
@@ -40,21 +46,47 @@ class Trainer():
         y_pred = self.pipeline.predict(X_test)
         self.score= compute_rmse(y_pred, y_test)
 
+    @memoized_property
+    def mlflow_client(self):
+        mlflow.set_tracking_uri(MLFLOW_URI)
+        return MlflowClient()
+
+    @memoized_property
+    def mlflow_experiment_id(self):
+        try:
+            return self.mlflow_client.create_experiment(self.experiment_name)
+        except BaseException:
+            return self.mlflow_client.get_experiment_by_name(self.experiment_name).experiment_id
+
+    @memoized_property
+    def mlflow_run(self):
+        return self.mlflow_client.create_run(self.mlflow_experiment_id)
+
+    def mlflow_log_param(self, key, value):
+        self.mlflow_client.log_param(self.mlflow_run.info.run_id, key, value)
+
+    def mlflow_log_metric(self, key, value):
+        self.mlflow_client.log_metric(self.mlflow_run.info.run_id, key, value)
+
 
 
 
 if __name__ == "__main__":
-    # get data
-    #df=get_data()
+    #get data
+    df=get_data()
     # clean data
-    #print(clean_data(df))
+    print(clean_data(df))
     # set X and y
-    #y=df['fare_amount']
-    #X=df.drop(columns="fare_amount")
+    y=df['fare_amount']
+    X=df.drop(columns="fare_amount")
     # hold out
 
+
+
+    trainer=Trainer(X_train,y_train)
+
     # train
-    #Trainer.run()
+    trainer.run()
     # evaluate
-    #Trainer.evaluate()
+    trainer.evaluate()
     print("TODO")

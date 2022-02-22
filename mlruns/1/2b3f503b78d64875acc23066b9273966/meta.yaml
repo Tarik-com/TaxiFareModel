@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/tarikelkhoury/code/Tarik-com/TaxiFareModel/mlruns/1/2b3f503b78d64875acc23066b9273966/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: active
+name: ''
+run_id: 2b3f503b78d64875acc23066b9273966
+run_uuid: 2b3f503b78d64875acc23066b9273966
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1645539926803
+status: 1
+tags: []
+user_id: unknown

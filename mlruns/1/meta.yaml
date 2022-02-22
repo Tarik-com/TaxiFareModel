@@ -1,0 +1,4 @@
+artifact_location: file:///Users/tarikelkhoury/code/Tarik-com/TaxiFareModel/mlruns/1
+experiment_id: '1'
+lifecycle_stage: active
+name: test_experiment
